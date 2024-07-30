@@ -1,3 +1,4 @@
+using MicroClientes;
 using MicroClientes.Infrastructure;
 using Newtonsoft.Json.Serialization;
 
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

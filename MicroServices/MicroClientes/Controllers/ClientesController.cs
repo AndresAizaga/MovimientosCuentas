@@ -4,6 +4,7 @@ using MicroClientes.Domain.Entities;
 using MicroClientes.Infrastructure;
 using MicroClientes.Infrastructure.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MicroClientes.Controllers
@@ -45,8 +46,20 @@ namespace MicroClientes.Controllers
         [Route("GetById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = CreateService().GetEntityById(id);
-            return Ok(result);
+            try
+            {
+                var service = CreateService();
+                var result = await service.GetEntityById(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { statusCode = 500, message = ex.Message });
+            }
         }
 
         [HttpPost]
@@ -68,23 +81,38 @@ namespace MicroClientes.Controllers
                 password = request.password,
                 personaId = persona.id,
             });
-            return Ok(cliente);
+            return CreatedAtAction(nameof(GetById), new { id = cliente.id }, cliente);
         }
 
         [HttpPut]
         [Route("Update")]
         public async Task<IActionResult> Update([FromBody] Cliente request)
         {
-            await CreateService().EditEntity(request);
-            return Ok("Registro actualizado exitosamente");
+            try
+            {
+                await CreateService().EditEntity(request);
+                return Ok("Registro actualizado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { statusCode = 500, message = ex.Message });
+            }
+            
         }
 
         [HttpDelete]
         [Route("Delete")]
         public IActionResult Delete(int id)
         {
-            CreateService().Delete(id);
-            return Ok("Registro eliminado exitosamente");
+            try
+            {
+                CreateService().Delete(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new {statusCode = 500, message = ex.Message });
+            }
         }
     }
 }
