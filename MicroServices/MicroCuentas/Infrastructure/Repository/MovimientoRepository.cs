@@ -1,10 +1,11 @@
 ﻿using MicroCuentas.Domain.Entities;
 using MicroCuentas.Domain.Repository;
+using MicroCuentas.Domain.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroCuentas.Infrastructure.Repository
 {
-    public class MovimientoRepository : IRepositoryBase<Movimiento, int>
+    public class MovimientoRepository : IMovimientoRepository
     {
         private MicroContext context;
 
@@ -35,8 +36,18 @@ namespace MicroCuentas.Infrastructure.Repository
 
         public async Task EditEntity(Movimiento entity)
         {
-            this.context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            this.context.Entry(entity).State = EntityState.Modified;
             this.context.SaveChanges();
+        }
+
+        public async Task<List<Movimiento>> GetByCuentaId(int cuentaId)
+        {
+            return this.context.Movimientos.Where(x => x.cuentaId == cuentaId).Include(m => m.cuenta).ToList();
+        }
+
+        public async Task<List<Movimiento>> GetByFechas(DateTime fechaDesde, DateTime fechaHasta)
+        {
+            return this.context.Movimientos.Where(x => x.fecha >= fechaDesde && x.fecha <= fechaHasta).OrderBy(x => x.cuentaId).OrderBy(x => x.fecha).ToList();
         }
 
         public async Task<Movimiento?> GetEntityById(int entityId) =>
@@ -44,5 +55,11 @@ namespace MicroCuentas.Infrastructure.Repository
 
         public async Task<List<Movimiento>> ListEntity() =>
             this.context.Movimientos.Include(m => m.cuenta).ToList();
+    }
+
+    public interface IMovimientoRepository : IRepositoryBase<Movimiento, int>
+    {
+        Task<List<Movimiento>> GetByCuentaId(int cuentaId);
+        Task<List<Movimiento>> GetByFechas(DateTime fechaDesde, DateTime fechaHasta);
     }
 }

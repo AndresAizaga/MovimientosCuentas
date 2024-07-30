@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  microclientes:
+    build:
+      context: ./MicroClientes
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80" 
+
+  microcuentas:
+    build:
+      context: ./MicroCuentas
+      dockerfile: Dockerfile
+    ports:
+      - "5002:80"

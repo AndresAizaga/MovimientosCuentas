@@ -1,14 +1,15 @@
 ﻿using MicroCuentas.Application.Interface;
 using MicroCuentas.Domain.Entities;
 using MicroCuentas.Domain.Repository;
+using MicroCuentas.Infrastructure.Repository;
 
 namespace MicroCuentas.Application.Service
 {
     public class MovimientoService : IMovimientoService<Movimiento, int>
     {
-        private readonly IRepositoryBase<Movimiento, int> _repository;
+        private readonly IMovimientoRepository _repository;
 
-        public MovimientoService(IRepositoryBase<Movimiento, int> repository)
+        public MovimientoService(IMovimientoRepository repository)
         {
             _repository = repository;
         }
@@ -40,6 +41,16 @@ namespace MicroCuentas.Application.Service
             _entityRepo.fecha = entity.fecha;
 
             this._repository.EditEntity(_entityRepo);
+        }
+
+        public async Task<List<Movimiento>> GetByCuentaId(int cuentaId)
+        {
+            return await this._repository.GetByCuentaId(cuentaId);
+        }
+
+        public async Task<List<Movimiento>> GetByFechas(DateTime fechaDesde, DateTime fechaHasta)
+        {
+            return await this._repository.GetByFechas(fechaDesde, fechaHasta);
         }
 
         public async Task<Movimiento?> GetEntityById(int entityId) =>

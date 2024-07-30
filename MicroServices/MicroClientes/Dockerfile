@@ -1,27 +1,26 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
+# Use the official .NET 8 SDK image as the build environment
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["MicroClientes/MicroClientes.csproj", "MicroClientes/"]
-RUN dotnet restore "./MicroClientes/MicroClientes.csproj"
-COPY . .
-WORKDIR "/src/MicroClientes"
-RUN dotnet build "./MicroClientes.csproj" -c %BUILD_CONFIGURATION% -o /app/build
+# Copy the csproj file and restore dependencies
+COPY MicroClientes/*.csproj ./MicroClientes/
+RUN dotnet restore MicroClientes/MicroClientes.csproj
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MicroClientes.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
+# Copy the rest of the application and build it
+COPY MicroClientes/. ./MicroClientes/
+WORKDIR /app/MicroClientes
+RUN dotnet build -c Release -o /app/build
 
-FROM base AS final
+# Publish the application
+RUN dotnet publish -c Release -o /app/publish
+
+# Use the official .NET 8 runtime image for the runtime environment
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
+
+# Expose port 80
+EXPOSE 80
+
+# Set the entry point to the application
 ENTRYPOINT ["dotnet", "MicroClientes.dll"]

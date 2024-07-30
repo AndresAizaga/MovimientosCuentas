@@ -40,9 +40,9 @@ namespace MicroCuentas.Infrastructure.Repository
         }
 
         public async Task<Cuenta?> GetEntityById(int entityId) =>
-            this.context.Cuentas.FirstOrDefault(x => x.id == entityId) ?? null;
+            this.context.Cuentas.Include(c => c.cliente).Include(p => p.cliente.persona).FirstOrDefault(x => x.id == entityId) ?? null;
 
         public async Task<List<Cuenta>> ListEntity() =>
-            this.context.Cuentas.ToList();
+            this.context.Cuentas.Include(c => c.cliente).Include(p => p.cliente.persona).ToList();
     }
 }

@@ -1,8 +1,12 @@
 ﻿using MicroCuentas.Application.Service;
+using MicroCuentas.Controllers.Input;
+using MicroCuentas.Controllers.Output;
 using MicroCuentas.Domain.Entities;
 using MicroCuentas.Infrastructure;
 using MicroCuentas.Infrastructure.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
+using System.Runtime.CompilerServices;
 
 
 namespace MicroCuentas.Controllers
@@ -22,6 +26,13 @@ namespace MicroCuentas.Controllers
         {
             MovimientoRepository repository = new MovimientoRepository(db);
             MovimientoService service = new MovimientoService(repository);
+            return service;
+        }
+
+        private CuentaService CreateCuentaService()
+        {
+            CuentaRepository repository = new CuentaRepository(db);
+            CuentaService service = new CuentaService(repository);
             return service;
         }
 
@@ -55,10 +66,30 @@ namespace MicroCuentas.Controllers
 
         [HttpPost]
         [Route("Add")]
-        public async Task<IActionResult> Add([FromBody] Movimiento request)
+        public async Task<IActionResult> Add([FromBody] MovimientoRequest request)
         {
-            var cliente = await CreateService().AddEntity(request);
-            return CreatedAtAction(nameof(GetById), new { id = cliente.id }, cliente);
+            var movimientos = await CreateService().GetByCuentaId(request.cuentaId);
+            double saldo = CreateCuentaService().GetEntityById(request.cuentaId).Result.saldoInicial;
+            if (movimientos != null && movimientos.Count > 0)
+                saldo = movimientos.OrderByDescending(x => x.fecha).ToList()[0].saldo;
+
+            if (request.tipoMovimiento.Equals(TipoMovimiento.Debito))
+            {
+                if ((saldo + request.valor) < 0)
+                {
+                    return StatusCode(StatusCodes.Status406NotAcceptable, new { statusCode = 406, message = "Saldo insuficiente en la cuenta." });
+                }
+            }
+            var result = CreateService().AddEntity(new Movimiento
+            {
+                cuentaId = request.cuentaId,
+                fecha = DateTime.Now,
+                saldo = saldo + request.valor,
+                tipoMovimiento = request.tipoMovimiento.GetDisplayName(),
+                valor = request.valor,
+            });
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut]
@@ -85,6 +116,38 @@ namespace MicroCuentas.Controllers
             {
                 CreateService().Delete(id);
                 return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { statusCode = 500, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("reportes")]
+        public async Task<IActionResult> Reportes(DateTime fechaDesde, DateTime fechaHasta)
+        {
+            try
+            {
+                var movimientos = await CreateService().GetByFechas(fechaDesde, fechaHasta);
+                List<MovimientoOutput> result = new List<MovimientoOutput>();
+                
+                foreach (var movimiento in movimientos)
+                {
+                    var cuenta = await CreateCuentaService().GetEntityById(movimiento.cuentaId);
+                    result.Add(new MovimientoOutput
+                    {
+                        cliente = cuenta.cliente.persona.nombre,
+                        estado = cuenta.estado,
+                        fecha = movimiento.fecha,
+                        movimiento = movimiento.valor,
+                        numeroCuenta = cuenta.numeroCuenta,
+                        saldoInicial = cuenta.saldoInicial,
+                        saldoDisponible = movimiento.saldo,
+                        tipoCuenta = cuenta.tipoCuenta
+                    });
+                }
+                return Ok(result);
             }
             catch (Exception ex)
             {
