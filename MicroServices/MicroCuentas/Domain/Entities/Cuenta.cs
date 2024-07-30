@@ -6,7 +6,7 @@
         public int clienteId { get; set; }
         public string numeroCuenta { get; set; }
         public string tipoCuenta { get; set; }
-        public decimal saldoInicial { get; set; }
+        public double saldoInicial { get; set; }
         public bool estado { get; set; }
     }
 }
