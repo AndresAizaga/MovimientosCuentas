@@ -15,10 +15,10 @@ namespace MicroClientes.Application.Service
 
         public int Count => this._repository.Count;
 
-        public Cliente AddEntity(Cliente entity)
+        public async Task<Cliente> AddEntity(Cliente entity)
         {
             if (entity == null) throw new ArgumentNullException("El cliente es requerido");
-            var result = this._repository.AddEntity(entity);
+            var result = await this._repository.AddEntity(entity);
             return result;
         }
 
@@ -27,10 +27,10 @@ namespace MicroClientes.Application.Service
             this._repository.Delete(entityId);
         }
 
-        public void EditEntity(Cliente entity)
+        public async Task EditEntity(Cliente entity)
         {
             if (entity == null) throw new ArgumentNullException("El Features es requerido");
-            var _entityRepo = this._repository.GetEntityById(entity.id);
+            var _entityRepo = await this._repository.GetEntityById(entity.id);
 
             if (_entityRepo == null) throw new ArgumentNullException("No existe el Features");
             _entityRepo.password = entity.password;
@@ -39,9 +39,9 @@ namespace MicroClientes.Application.Service
             this._repository.EditEntity(_entityRepo);
         }
 
-        public Cliente? GetEntityById(int entityId) =>
-            this._repository.GetEntityById(entityId);
+        public async Task<Cliente?> GetEntityById(int entityId) =>
+            await this._repository.GetEntityById(entityId);
 
-        public List<Cliente> ListEntity() => this._repository.ListEntity();
+        public async Task<List<Cliente>> ListEntity() => await this._repository.ListEntity();
     }
 }

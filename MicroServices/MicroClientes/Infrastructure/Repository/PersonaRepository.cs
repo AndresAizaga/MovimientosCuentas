@@ -15,7 +15,7 @@ namespace MicroClientes.Infrastructure.Repository
 
         public int Count => this.context.Personas.Count();
 
-        public Persona AddEntity(Persona entity)
+        public async Task<Persona> AddEntity(Persona entity)
         {
             this.context.Personas.Add(entity);
             this.context.SaveChanges();
@@ -32,16 +32,16 @@ namespace MicroClientes.Infrastructure.Repository
             }
         }
 
-        public void EditEntity(Persona entity)
+        public async Task EditEntity(Persona entity)
         {
             this.context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             this.context.SaveChanges();
         }
 
-        public Persona? GetEntityById(int entityId) =>
+        public async Task<Persona?> GetEntityById(int entityId) =>
             this.context.Personas.Find(entityId) ?? null;
 
-        public List<Persona> ListEntity() =>
+        public async Task<List<Persona>> ListEntity() =>
             this.context.Personas.ToList();
     }
 }

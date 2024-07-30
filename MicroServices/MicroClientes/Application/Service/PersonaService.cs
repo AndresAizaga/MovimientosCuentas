@@ -15,10 +15,10 @@ namespace MicroClientes.Application.Service
 
         public int Count => this._repository.Count;
 
-        public Persona AddEntity(Persona entity)
+        public async Task<Persona> AddEntity(Persona entity)
         {
             if (entity == null) throw new ArgumentNullException("La Persona es requerido");
-            var result = this._repository.AddEntity(entity);
+            var result = await this._repository.AddEntity(entity);
             return result;
         }
 
@@ -27,10 +27,10 @@ namespace MicroClientes.Application.Service
             this._repository.Delete(entityId);
         }
 
-        public void EditEntity(Persona entity)
+        public async Task EditEntity(Persona entity)
         {
             if (entity == null) throw new ArgumentNullException("El Features es requerido");
-            var _entityRepo = this._repository.GetEntityById(entity.id);
+            var _entityRepo = await this._repository.GetEntityById(entity.id);
 
             if (_entityRepo == null) throw new ArgumentNullException("No existe el Features");
             _entityRepo.identificacion = entity.identificacion;
@@ -43,9 +43,9 @@ namespace MicroClientes.Application.Service
             this._repository.EditEntity(_entityRepo);
         }
 
-        public Persona? GetEntityById(int entityId) =>
-            this._repository.GetEntityById(entityId);
+        public async Task<Persona>? GetEntityById(int entityId) =>
+            await this._repository.GetEntityById(entityId);
 
-        public List<Persona> ListEntity() => this._repository.ListEntity();
+        public async Task<List<Persona>> ListEntity() => await this._repository.ListEntity();
     }
 }

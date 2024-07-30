@@ -2,6 +2,6 @@
 {
     public interface IAdd<TEntidad>
     {
-        TEntidad AddEntity(TEntidad entity);
+        Task<TEntidad> AddEntity(TEntidad entity);
     }
 }

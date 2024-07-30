@@ -3,7 +3,7 @@
     public interface IList<TEntity, TEntityId>
     {
         int Count { get; }
-        List<TEntity> ListEntity();
-        TEntity? GetEntityById(TEntityId entityId);
+        Task<List<TEntity>> ListEntity();
+        Task<TEntity>? GetEntityById(TEntityId entityId);
     }
 }

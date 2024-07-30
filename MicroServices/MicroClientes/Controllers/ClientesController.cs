@@ -1,4 +1,5 @@
 ﻿using MicroClientes.Application.Service;
+using MicroClientes.Controllers.DTO;
 using MicroClientes.Domain.Entities;
 using MicroClientes.Infrastructure;
 using MicroClientes.Infrastructure.Repository;
@@ -12,8 +13,9 @@ namespace MicroClientes.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly MicroContext db;
-        
-        public ClientesController(MicroContext _db) {
+
+        public ClientesController(MicroContext _db)
+        {
             this.db = _db;
         }
 
@@ -24,9 +26,16 @@ namespace MicroClientes.Controllers
             return service;
         }
 
+        private PersonaService CreatePersonaService()
+        {
+            PersonaRepository repository = new PersonaRepository(db);
+            PersonaService service = new PersonaService(repository);
+            return service;
+        }
+
         [HttpGet]
         [Route("GetAll")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var result = CreateService().ListEntity();
             return Ok(result);
@@ -34,7 +43,7 @@ namespace MicroClientes.Controllers
 
         [HttpGet]
         [Route("GetById/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var result = CreateService().GetEntityById(id);
             return Ok(result);
@@ -42,17 +51,31 @@ namespace MicroClientes.Controllers
 
         [HttpPost]
         [Route("Add")]
-        public IActionResult Add([FromBody] Cliente request)
+        public async Task<IActionResult> Add([FromBody] ClientePersonaDTO request)
         {
-            var result = CreateService().AddEntity(request);
-            return Ok(result);
+            var persona = await CreatePersonaService().AddEntity(new Persona
+            {
+                direccion = request.direccion,
+                edad = request.edad,
+                genero = request.genero,
+                identificacion = request.identificacion,
+                nombre = request.nombre,
+                telefono = request.telefono
+            });
+            var cliente = await CreateService().AddEntity(new Cliente
+            {
+                estado = request.estado,
+                password = request.password,
+                personaId = persona.id,
+            });
+            return Ok(cliente);
         }
 
         [HttpPut]
         [Route("Update")]
-        public IActionResult Update([FromBody] Cliente request)
+        public async Task<IActionResult> Update([FromBody] Cliente request)
         {
-            CreateService().EditEntity(request);
+            await CreateService().EditEntity(request);
             return Ok("Registro actualizado exitosamente");
         }
 

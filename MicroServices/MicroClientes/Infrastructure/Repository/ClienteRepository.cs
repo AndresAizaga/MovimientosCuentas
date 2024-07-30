@@ -1,5 +1,6 @@
 ﻿using MicroClientes.Domain.Entities;
 using MicroClientes.Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace MicroClientes.Infrastructure.Repository
 {
@@ -15,7 +16,7 @@ namespace MicroClientes.Infrastructure.Repository
 
         public int Count => this.context.Clientes.Count();
 
-        public Cliente AddEntity(Cliente entity)
+        public async Task<Cliente> AddEntity(Cliente entity)
         {
             this.context.Clientes.Add(entity);
             this.context.SaveChanges();
@@ -32,16 +33,16 @@ namespace MicroClientes.Infrastructure.Repository
             }
         }
 
-        public void EditEntity(Cliente entity)
+        public async Task EditEntity(Cliente entity)
         {
             this.context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             this.context.SaveChanges();
         }
 
-        public Cliente? GetEntityById(int entityId) =>
-            this.context.Clientes.Find(entityId) ?? null;
+        public async Task <Cliente?> GetEntityById(int entityId) =>
+            this.context.Clientes.Include(p => p.persona).FirstOrDefault( x=> x.id == entityId) ?? null;
 
-        public List<Cliente> ListEntity() =>
-            this.context.Clientes.ToList();
+        public async Task<List<Cliente>> ListEntity() =>
+            this.context.Clientes.Include( p => p.persona).ToList();
     }
 }

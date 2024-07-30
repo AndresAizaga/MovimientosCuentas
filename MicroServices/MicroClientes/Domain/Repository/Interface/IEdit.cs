@@ -2,6 +2,6 @@
 {
     public interface IEdit<TEntity>
     {
-        void EditEntity(TEntity entity);
+        Task EditEntity(TEntity entity);
     }
 }
