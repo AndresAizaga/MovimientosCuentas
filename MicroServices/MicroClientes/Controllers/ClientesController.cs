@@ -101,7 +101,7 @@ namespace MicroClientes.Controllers
         }
 
         [HttpDelete]
-        [Route("Delete")]
+        [Route("Delete/{id}")]
         public IActionResult Delete(int id)
         {
             try

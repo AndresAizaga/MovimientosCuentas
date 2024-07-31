@@ -5,12 +5,14 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroClientes", "MicroClientes\MicroClientes.csproj", "{6419569E-9327-41C0-BCD0-F4E7FC9F4B5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroCuentas", "MicroCuentas\MicroCuentas.csproj", "{F97E0B3C-658B-4E65-92C6-FB0148D714D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCuentas", "MicroCuentas\MicroCuentas.csproj", "{F97E0B3C-658B-4E65-92C6-FB0148D714D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C4D2782E-3DF5-4C48-9DE7-C0DF415E305B}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Integration.Tests", "Integration.Tests\Integration.Tests.csproj", "{C6D5AA5A-8860-44E8-BBAF-6BB1E72513E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{F97E0B3C-658B-4E65-92C6-FB0148D714D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F97E0B3C-658B-4E65-92C6-FB0148D714D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F97E0B3C-658B-4E65-92C6-FB0148D714D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6D5AA5A-8860-44E8-BBAF-6BB1E72513E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6D5AA5A-8860-44E8-BBAF-6BB1E72513E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6D5AA5A-8860-44E8-BBAF-6BB1E72513E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6D5AA5A-8860-44E8-BBAF-6BB1E72513E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,4 +24,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Integration.Tests"/>
+  </ItemGroup>
+
 </Project>
