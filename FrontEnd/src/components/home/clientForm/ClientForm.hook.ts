@@ -8,7 +8,7 @@ import {
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { SelectChangeEvent } from '@mui/material';
-import { Client } from '../HiringTest.types.ts';
+import {Client, SaveClient} from '../HiringTest.types.ts';
 import { ActionResult } from '../../../tools/api.ts';
 import { saveClient, updateClient } from '../../../tools/clientAPi.ts';
 
@@ -72,17 +72,20 @@ export const useClientForm = (props: ClientFormProps): UseClientForm => {
     let notification: string;
     let response: ActionResult<void>;
 
-    const clientSend: Client = {
-      estado, password, persona: {
-        edad, nombre, genero, identificacion, direccion, telefono
-      }
-    };
+    const clientSave: SaveClient = {
+      edad, nombre, genero, identificacion, direccion, telefono, estado, password
+    }
 
     if (clientDetails && clientDetails.id) {
-      response = await updateClient( { ...clientSend, id: clientDetails.id });
+      const clientUpdate: Client = {
+        id: clientDetails.id, estado, password, personaId: clientDetails.id, persona: {
+          edad, nombre, genero, identificacion, direccion, telefono, id: clientDetails.id
+        }
+      };
+      response = await updateClient( clientUpdate);
       notification = 'Cliente actualizado exitosamente';
     } else {
-      response = await saveClient(clientSend);
+      response = await saveClient(clientSave);
       notification = 'Cliente añadido exitosamente';
     }
 

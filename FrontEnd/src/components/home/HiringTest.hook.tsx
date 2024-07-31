@@ -27,17 +27,19 @@ export const useHiringTest = (): UseHiringTest => {
 
   const clientColumns: GridColDef[] = useMemo(() => [
     { field: 'id', headerName: 'ID', width: 30 },
-    { field: 'identificacion', headerName: 'Identificación', width: 150 },
+    { field: 'identificacion', headerName: 'Identificación', width: 150,
+      valueGetter: (params) => params.row.persona.identificacion
+    },
     { field: 'nombre', headerName: 'Nombre', width: 180,
       valueGetter: (params) => params.row.persona.nombre
     },
     {
       field: 'estado',
       headerName: 'Estado',
-      width: 120,
+      width: 90,
       renderCell: DataTableStatusCell
     },
-    { field: 'edad', headerName: 'Edad', type: 'number', width: 80,
+    { field: 'edad', headerName: 'Edad', type: 'number', width: 70,
       valueGetter: (params) => params.row.persona.edad
     },
     { field: 'genero', headerName: 'Género', width: 100,
@@ -75,11 +77,12 @@ export const useHiringTest = (): UseHiringTest => {
     setShowClientForm(true);
   }, []);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     setClientDetails(undefined);
     setShowClientForm(false);
     setShowClientViewer(false);
-  }, []);
+    await handleGetAgenciesList();
+  }, [handleGetAgenciesList]);
 
   const handleClientView = useCallback( async(id: GridRowId) => {
     setLoadingData(true);
@@ -120,6 +123,7 @@ export const useHiringTest = (): UseHiringTest => {
         setErrorClientDeleted(`Se produjo un error al eliminar el cliente: ${response.error.message}`);
       } else {
         setShowClientDeletedSuccess(true);
+        await handleGetAgenciesList();
       }
     }
   }, [selectedClient]);

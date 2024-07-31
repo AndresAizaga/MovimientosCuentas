@@ -1,4 +1,4 @@
-import { Client } from '../components/home/HiringTest.types.ts';
+import {Client, SaveClient} from '../components/home/HiringTest.types.ts';
 import { ActionResult, ApiError, AxiosMethod, requestApi } from './api.ts';
 import { Endpoints } from '../types/endpoints.ts';
 import _get from 'lodash/get';
@@ -43,7 +43,7 @@ export const getDetailsClients = async (id: string): Promise<ActionResult<Client
   return {}
 }
 
-export const saveClient = async (client: Client): Promise<ActionResult<void>> => {
+export const saveClient = async (client: SaveClient): Promise<ActionResult<void>> => {
   try {
     await requestApi<unknown, Client>(client, Endpoints.CreateClient, AxiosMethod.Post);
   } catch (e) {
@@ -59,7 +59,7 @@ export const saveClient = async (client: Client): Promise<ActionResult<void>> =>
 
 export const updateClient = async (client: Client): Promise<ActionResult<void>> => {
   try {
-    await requestApi<unknown, Client>(client, Endpoints.UpdateClient, AxiosMethod.Put, `/${client.id}`);
+    await requestApi<unknown, Client>(client, Endpoints.UpdateClient, AxiosMethod.Put);
   } catch (e) {
     // TODO: Actualizar la respuesta de error
     const { name, message } = _get(e, 'response.data.error', {}) as ApiError;

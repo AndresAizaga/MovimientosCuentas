@@ -19,6 +19,17 @@ export interface Client {
     personaId?: number
 }
 
+export interface SaveClient {
+    direccion?: string,
+    edad?: number,
+    estado?: boolean,
+    genero?: string,
+    identificacion?: string,
+    nombre?: string,
+    password?: string,
+    telefono?: string
+}
+
 export interface HiringTestState {
     clientApiError: string;
     clientColumns: GridColDef[];

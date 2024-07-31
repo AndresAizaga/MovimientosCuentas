@@ -1,6 +1,5 @@
 import { Endpoints } from '../types/endpoints.ts';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import qs from 'qs';
 
 export enum AxiosMethod {
     Delete = 'Delete',
@@ -27,14 +26,16 @@ export const requestApi = async <T, D>(data: T, endpoint: Endpoints, method: Axi
   let url = `${apiURL}${endpoint}`;
   if (param) url += `${param}`;
 
-  const config: AxiosRequestConfig<D> = { timeout: 30000 };
+  const config: AxiosRequestConfig<D> = { timeout: 30000, headers: {
+    'Content-Type': 'application/json'
+  } };
 
   let response: AxiosResponse<D, T>;
 
   if (method === AxiosMethod.Post) {
-    response = await axios.post<D>(url, qs.stringify(data), config);
+    response = await axios.post<D>(url, data, config);
   } else if (method === AxiosMethod.Put) {
-    response = await axios.put<D>(url, qs.stringify(data), config);
+    response = await axios.put<D>(url, data, config);
   } else if (method === AxiosMethod.Delete) {
     response = await axios.delete<D>(url, config);
   } else {
